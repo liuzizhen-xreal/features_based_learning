@@ -1,0 +1,5 @@
+image1,image2,method,ratio,match_count,skipped_insufficient_neighbors,output_image
+20261023-104938.jpg,20261023-105003.jpg,cross_check,,241,,cross_check.png
+20261023-104938.jpg,20261023-105003.jpg,ratio_0.6,0.6,12,0,ratio_0.6.png
+20261023-104938.jpg,20261023-105003.jpg,ratio_0.75,0.75,57,0,ratio_0.75.png
+20261023-104938.jpg,20261023-105003.jpg,ratio_0.9,0.9,334,0,ratio_0.9.png
