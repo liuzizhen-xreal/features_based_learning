@@ -1,0 +1,4 @@
+# GPU stack for this project's Python 3.12 environment.
+--index-url https://download.pytorch.org/whl/cu126
+torch==2.14.1+cu126
+torchvision==0.29.1+cu126

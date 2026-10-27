@@ -5,8 +5,6 @@ from pathlib import Path
 import torch
 import matplotlib
 
-# 使用无窗口后端，直接保存图片，适用于没有图形桌面的环境。
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
