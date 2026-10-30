@@ -4,6 +4,32 @@ from pathlib import Path
 import numpy
 import cv2
 
+
+def save_image(path, image):
+    """压缩 PNG，必要时缩小可视化，保证单张图片不超过 20 MB。"""
+    max_bytes = 20_000_000
+    preview = image
+    while True:
+        success, encoded = cv2.imencode(
+            ".png", preview, [cv2.IMWRITE_PNG_COMPRESSION, 6],
+        )
+        if not success:
+            raise OSError(f"图片编码失败: {path}")
+        if encoded.nbytes <= max_bytes:
+            path.write_bytes(encoded.tobytes())
+            height, width = preview.shape[:2]
+            print(f"已保存: {path}，{width}×{height}，{encoded.nbytes / 1_000_000:.2f} MB")
+            return
+        height, width = preview.shape[:2]
+        if width == 1 and height == 1:
+            raise OSError(f"图片无法压缩到 20 MB 以内: {path}")
+        scale = min(0.9, (max_bytes / encoded.nbytes) ** 0.5 * 0.95)
+        preview = cv2.resize(
+            preview, (max(1, int(width * scale)), max(1, int(height * scale))),
+            interpolation=cv2.INTER_AREA,
+        )
+
+
 def main():
     # 根据脚本所在目录定位图片，不受运行命令时的工作目录影响。
     base_dir = Path(__file__).resolve().parent
@@ -59,24 +85,23 @@ def main():
         )
 
     # 距离越小越相似；匹配不足 50 条时绘制全部匹配。
-    best_matches = matches[:50]
+    best_matches = matches[:300]
     print(f"双向最近邻匹配数量: {len(matches)}")
     print(f"绘制匹配数量: {len(best_matches)}")
     matches_image = cv2.drawMatches(
         image1, keypoints1, image2, keypoints2, best_matches, None,
+        matchColor=(0, 255, 0),  # OpenCV 使用 BGR 顺序，这里为绿色。
         flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS,
     )
 
     results = {
         "orb_keypoints1.png": keypoints_image1,
         "orb_keypoints2.png": keypoints_image2,
-        "orb_matches_top50.png": matches_image,
+        "orb_matches.png": matches_image,
     }
     for filename, result in results.items():
         output_path = output_dir / filename
-        if not cv2.imwrite(str(output_path), result):
-            raise OSError(f"图片保存失败: {output_path}")
-        print(f"已保存: {output_path}")
+        save_image(output_path, result)
 
 
 if __name__ == "__main__":

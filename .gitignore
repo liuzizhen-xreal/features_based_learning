@@ -2,3 +2,6 @@
 __pycache__/
 day01/outputs/
 day01/data/
+
+# Keep local datasets out of Git (sequences, MNIST, etc.).
+/dataset/
